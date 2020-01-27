@@ -1,0 +1,46 @@
+
+##Part 1 pollutantmean:
+pollutantmean <- function(directory, pollutant, id = 1:332){
+  fulldata <- list.files(directory, full.names = TRUE)
+  df <- data.frame()
+  for (i in id){
+    df <- rbind(df, read.csv(fulldata[i]))
+  }
+  means <- mean(df[, pollutant], na.rm = TRUE)
+  return(means)
+}
+
+## Part 2 Completely Observed:
+complete <- function(directory = '~/R/HW1', id = 1:332){
+  fulldata <- list.files(directory, full.names = TRUE)
+  df <- data.frame()
+  for (i in id){
+    temp <- read.csv(fulldata[i])
+    nods <- sum(complete.cases(temp))
+    df <- rbind(df, data.frame(i, nods))
+  }
+  return(df)
+}
+
+##Part 3 corr
+##takes a directory of data files and a threshold for complete cases and 
+##calculates the correlation between sulfate and nitrate for monitor locations 
+##where the number of completely observed cases (on all variables) 
+##is greater than the threshold
+
+corr <- function(directory, threshold = 0){
+  fulldata <- list.files(directory, full.names = TRUE)
+  correlation <- vector()
+  for (i in 1:length(fulldata)) {
+    #read the file
+    temp <- read.csv(fulldata[i])
+    #counting nobs
+    nods <- sum(complete.cases(temp))
+    if (nods > threshold) {
+      temp <- temp[complete.cases(temp),]
+      correlation <- c(correlation, cor(temp$sulfate, temp$nitrate))
+    }
+  }
+  correlation
+}
+
